@@ -1,6 +1,6 @@
 package keesync
 
-class SyncServer(override val port: Int) extends Server {
+class SyncServer(override val portNumber: Int) extends Server {
   override val inputPrompt = "keesync> "
 
   @annotation.tailrec
@@ -10,6 +10,7 @@ class SyncServer(override val port: Int) extends Server {
   }
 
   def start(): Unit = {
+    log("Server starting...")
     spawnAcceptLoop
     commandLoop
   }

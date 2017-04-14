@@ -5,7 +5,7 @@ trait Server {
   import scala.concurrent.Future
   import scala.util.{Try , Success, Failure}
 
-  def port: Int
+  def portNumber: Int
 
   def inputPrompt: String
 
@@ -13,29 +13,29 @@ trait Server {
 
   def outputPrompt: String = s"[$timestamp]"
 
-  val serverSock = new java.net.ServerSocket(port)
+  val serverPort = {
+    val p = Network.createServerPort(portNumber)
+    log(s"[INFO] Ready to accept new client from $p")
+    p
+  }
 
   def log(msg: String) = println(s"\n$outputPrompt $msg")
-  def startMsg(): Unit = log(s"Server started, port: $port")
-  startMsg()
+  def startMsg(): Unit = log(s"Server started, port: $portNumber")
 
   protected def spawnAcceptLoop() =  Future {  // par.spawnLoop
     while (true) {
-      log("[INFO] Ready to accept new client ...")
-      val socket = serverSock.accept()
-      log(s"[INFO] New client connected at socket: $socket")
-      val channel = Network.Channel.fromSocket(socket)
-      log(s"[INFO] New channel created: $channel")
-      spawnReadLoop(channel)
+      val connection = Network.Connection.toClient(from = serverPort)
+      log(s"[INFO] New connection created: $connection")
+      spawnReadLoop(connection)
     }
   } onFailure { case e: Throwable => log(s"[ERROR] Accept loop terminated: ${e.getMessage()}") }
 
-  private def spawnReadLoop(channel: Network.Channel) =  {
+  private def spawnReadLoop(connection: Network.Connection) =  {
     Future {
       while (true) {
-        val msg = channel.read
+        val msg = connection.read
         log(s"[Info] Got message '$msg'")
-        channel.write(s"Echo: '$msg'")
+        connection.write(s"Echo: '$msg'")
       }
     } onFailure { case e: Throwable => log(s"[ERROR] Read loop terminated: ${e.getMessage()}") }
   }

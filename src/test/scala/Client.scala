@@ -8,28 +8,28 @@ import java.net.Socket
 
 class Client(val port: Int, val host: String = "localhost") {
 
-  val receiveTick: Long = 1000L
+  val cmdDelayMillis: Long = 50L
   val cmdPrompt: String ="> "
 
   def hello() =
     println("Welcome to keesync Client to test the keehive SyncServer!")
 
-  @volatile private var channelOpt: Option[Network.Channel] = None
+  @volatile private var connectionOpt: Option[Network.Connection] = None
 
   def connect() = {
     val sock = new Socket(host, port)
-    channelOpt = Some(Network.Channel.fromSocket(sock))
+    connectionOpt = Some(Network.Connection.fromSocket(sock))
     println(s"Connected to $host:$port")
   }
 
-  def receive(): String = channelOpt.get.read
+  def receive(): String = connectionOpt.get.read
 
-  def send(msg: String): Unit = channelOpt.get.write(msg)
+  def send(msg: String): Unit = connectionOpt.get.write(msg)
 
   def connectionFailed() = Try {
     println("Connection failed!")
-    channelOpt.get.close
-    channelOpt = None
+    connectionOpt.get.close
+    connectionOpt = None
   }
 
 /*  def keepConnected: Unit = par.spawnLoop {
@@ -46,7 +46,6 @@ class Client(val port: Int, val host: String = "localhost") {
     while (true) {
       val msg = receive()
       println(s"\n$msg")
-      Thread.sleep(receiveTick);
     }
   }
 
@@ -54,7 +53,8 @@ class Client(val port: Int, val host: String = "localhost") {
     while (true) {
       val cmd = scala.io.StdIn.readLine(cmdPrompt)
       send(cmd)
-      println(s"msg sent: $cmd")
+      Thread.sleep(cmdDelayMillis);
+      //println(s"msg sent: $cmd")
     }
   }
 
