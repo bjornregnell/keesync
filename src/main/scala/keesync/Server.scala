@@ -9,12 +9,17 @@ trait Server {
 
   def inputPrompt: String
 
+  trait Message { def msg : String }
+  case class Request (msg: String) extends Message
+  case class Response(msg: String) extends Message
+  type Dispatcher = Request => Response
+
   private def timestamp(): String = (new java.util.Date).toString
 
   def outputPrompt: String = s"[$timestamp]"
 
   val serverPort = {
-    val p = Network.createServerPort(portNumber)
+    val p = Network.bindServerToPort(portNumber)
     log(s"[INFO] Ready to accept new client from $p")
     p
   }
