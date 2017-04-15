@@ -6,7 +6,7 @@ import scala.util.{Try, Success, Failure}
 
 import java.net.Socket
 
-class Client(val port: Int, val host: String = "localhost") {
+class Client(val host: String = "localhost", val port: Int) {
 
   val cmdDelayMillis: Long = 50L
   val cmdPrompt: String ="> "

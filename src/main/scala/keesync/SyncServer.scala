@@ -1,6 +1,6 @@
 package keesync
 
-class SyncServer(override val portNumber: Int) extends Server {
+class SyncServer(override val port: Int) extends Server {
   override val inputPrompt = "keesync> "
 
   @annotation.tailrec

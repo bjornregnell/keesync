@@ -15,9 +15,9 @@ object Network {
   }
 
   case class ServerPort(serverSocket: ServerSocket){
-    def portNumber = serverSocket.getLocalPort
+    def port = serverSocket.getLocalPort
   }
-  def bindServerToPort(portNumber: Int): ServerPort = new ServerPort(new ServerSocket(portNumber))
+  def openServerPort(port: Int): ServerPort = new ServerPort(new ServerSocket(port))
 
   case class Connection(sock: Socket, dis: DataInputStream, dos: DataOutputStream){
     def read: String = dis.readUTF

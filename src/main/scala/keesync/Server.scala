@@ -5,7 +5,7 @@ trait Server {
   import scala.concurrent.Future
   import scala.util.{Try , Success, Failure}
 
-  def portNumber: Int
+  def port: Int
 
   def inputPrompt: String
 
@@ -19,13 +19,13 @@ trait Server {
   def outputPrompt: String = s"[$timestamp]"
 
   val serverPort = {
-    val p = Network.bindServerToPort(portNumber)
+    val p = Network.openServerPort(port)
     log(s"[INFO] Ready to accept new client from $p")
     p
   }
 
   def log(msg: String) = println(s"\n$outputPrompt $msg")
-  def startMsg(): Unit = log(s"Server started, port: $portNumber")
+  def startMsg(): Unit = log(s"Server started, port: $port")
 
   protected def spawnAcceptLoop() =  Future {  // par.spawnLoop
     while (true) {
