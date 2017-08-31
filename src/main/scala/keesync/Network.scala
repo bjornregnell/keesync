@@ -21,6 +21,7 @@ object Network {
 
   case class Connection(sock: Socket, dis: DataInputStream, dos: DataOutputStream){
     def read: String = dis.readUTF
+    def isActive: Boolean = sock.isBound && !sock.isClosed && sock.isConnected && !sock.isInputShutdown && !sock.isOutputShutdown
     def write(msg: String): Unit = writeAndFlush(dos, msg)
     def close(): Unit = { sock.close; dis.close; dos.close }
   }

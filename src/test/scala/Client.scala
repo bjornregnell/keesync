@@ -33,7 +33,10 @@ class Client(val host: String = "localhost", val port: Int) {
     else Left(msg)
   }
 
-  def send(msg: String): Unit = connectionOpt.get.write(msg)
+  def send(msg: String): Unit = {
+    Terminal.put(s"$connectionOpt: isActive=${connectionOpt.get.isActive}")
+    connectionOpt.get.write(msg)
+  }
 
   def connectionFailed() = Try {
     Terminal.put("Connection failed!")
